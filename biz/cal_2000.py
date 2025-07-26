@@ -1,4 +1,4 @@
-def find_closest_sublist_200(input_str) -> (list,str):
+def find_closest_sublist_200(input_str) -> (str,str):
     return find_closest_sublist(input_str,2000)
 
 def find_closest_sublist(input_str, target) -> (str,str):
@@ -29,7 +29,7 @@ def find_closest_sublist(input_str, target) -> (str,str):
 
     backtrack(0, [])
 
-    return f"最接近{target}的总和为{sum(closest_sublist)}, 其子列表为 {','.join(str(x) for x in closest_sublist)}"
+    return f"最接近{target}的总和为{sum(closest_sublist)}, 其子列表为 {','.join(str(x) for x in closest_sublist)}",''
 
 # 示例调用
 input_str = "1,2.3,3.4,4.5"

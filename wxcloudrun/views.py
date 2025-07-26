@@ -110,9 +110,9 @@ def webchat():
     user_msg = json_data.get('Content', '')
     from_user = json_data.get('FromUserName', '')
     to_user = json_data.get('ToUserName', '')
-    resp_text, err_msg = handler_user_msg(user_msg)
-    if err_msg != '':
-        resp_text = '执行错误：' + err_msg
+    resp_text = handler_user_msg(user_msg)
+    if not isinstance(resp_text, str):
+        resp_text = json.dumps(resp_text)
 
     # 调用Python计算逻辑
     resp_js = {
