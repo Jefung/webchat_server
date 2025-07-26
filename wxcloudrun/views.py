@@ -68,7 +68,25 @@ def get_count():
 
 import json
 logger = logging.getLogger('log')
-@app.route('/webchat', methods=['GET'])
+
+def check_signature(signature, timestamp, nonce):
+    # 实现签名校验（此处需自行编写）
+    return True
+
+@app.route('/wechat', methods=['GET'])
+def verify():
+    # 获取微信验证参数
+    signature = request.args.get('signature')
+    timestamp = request.args.get('timestamp')
+    nonce = request.args.get('nonce')
+    echostr = request.args.get('echostr')
+
+    if check_signature(signature, timestamp, nonce):
+        return echostr
+    else:
+        return "Invalid signature", 403
+
+@app.route('/wechat', methods=['POST'])
 def webchat():
     """
     :return: 计数的值
