@@ -70,7 +70,13 @@ def get_count():
     return make_succ_response(0) if counter is None else make_succ_response(counter.count)
 
 import json
-logger = logging.getLogger('log')
+# 初始化日志配置
+logging.basicConfig(
+    level=logging.INFO,  # 设置日志级别
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
 
 def check_signature(signature, timestamp, nonce):
     # 实现签名校验（此处需自行编写）
@@ -95,24 +101,30 @@ def webchat():
     :return: 计数的值
     """
     # 获取请求体参数
-    json_data = request.get_json()
+    json_data = request.get_json(silent=True)
+    if not json_data:
+        logger.error("非JSON格式请求")
+        return jsonify({"code": 400, "msg": "Invalid JSON"}), 400
 
     # 提取关键字段
-    user_msg = json_data.get('content', '')
-    from_user = json_data.get('fromUserName', '')
-    to_user = json_data.get('toUserName', '')
+    user_msg = json_data.get('Content', '')
+    from_user = json_data.get('FromUserName', '')
+    to_user = json_data.get('ToUserName', '')
     resp_text, err_msg = handler_user_msg(user_msg)
     if err_msg != '':
         resp_text = '执行错误：' + err_msg
 
     # 调用Python计算逻辑
     result = json.dumps(json_data)
+    resp = jsonify({
+            "ToUserName": from_user,  # 注意字段反向
+            "FromUserName": to_user,
+            "CreateTime": int(time.time()),
+            "MsgType": "text",
+            "Content": resp_text
+        })
+    logger.info('{}'.format(json_data))
+    logger.info(resp)
 
     # 返回JSON格式响应
-    return jsonify({
-        "ToUserName": from_user,  # 注意字段反向
-        "FromUserName": to_user,
-        "CreateTime": int(time.time()),
-        "MsgType": "text",
-        "Content": resp_text
-    })
+    return resp
