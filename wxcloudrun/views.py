@@ -1,7 +1,7 @@
 import logging
 import time
 from datetime import datetime
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify,Response
 
 from biz.handler_user_msg import handler_user_msg
 from run import app
@@ -122,9 +122,11 @@ def webchat():
                 "MsgType": "text",
                 "Content": resp_text
             }
-    resp = jsonify(resp_js)
     logger.info('{}'.format(json_data))
     logger.info(json.dumps(resp_js))
 
     # 返回JSON格式响应
-    return resp
+    return Response(
+        json.dumps(resp_js, ensure_ascii=False),  # 关键参数
+        mimetype='application/json'
+    )
