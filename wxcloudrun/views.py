@@ -1,6 +1,7 @@
 import logging
+import time
 from datetime import datetime
-from flask import render_template, request
+from flask import render_template, request, jsonify
 from run import app
 from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter, update_counterbyid
 from wxcloudrun.model import Counters
@@ -92,10 +93,21 @@ def webchat():
     :return: 计数的值
     """
     # 获取请求体参数
-    params = request.get_json()
-    logger.info(params)
+    json_data = request.get_json()
 
-    return {
-      "result": json.dumps(params),
-      "status": "success"
-    }
+    # 提取关键字段
+    user_msg = json_data.get('content', '')
+    from_user = json_data.get('fromUserName', '')
+    to_user = json_data.get('toUserName', '')
+
+    # 调用Python计算逻辑
+    result = json.dumps(json_data)
+
+    # 返回JSON格式响应
+    return jsonify({
+        "toUserName": from_user,  # 注意字段反向
+        "fromUserName": to_user,
+        "createTime": int(time.time()),
+        "msgType": "text",
+        "content": result
+    })
