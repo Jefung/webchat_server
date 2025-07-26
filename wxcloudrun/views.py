@@ -73,7 +73,7 @@ import json
 # 初始化日志配置
 logging.basicConfig(
     level=logging.INFO,  # 设置日志级别
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format='%(asctime)s - %(name)s - %(levelname)s %(filename)s:%(lineno)d: %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 logger = logging.getLogger(__name__)
@@ -115,16 +115,16 @@ def webchat():
         resp_text = '执行错误：' + err_msg
 
     # 调用Python计算逻辑
-    result = json.dumps(json_data)
-    resp = jsonify({
-            "ToUserName": from_user,  # 注意字段反向
-            "FromUserName": to_user,
-            "CreateTime": int(time.time()),
-            "MsgType": "text",
-            "Content": resp_text
-        })
+    resp_js = {
+                "ToUserName": from_user,  # 注意字段反向
+                "FromUserName": to_user,
+                "CreateTime": int(time.time()),
+                "MsgType": "text",
+                "Content": resp_text
+            }
+    resp = jsonify(resp_js)
     logger.info('{}'.format(json_data))
-    logger.info(resp)
+    logger.info(json.dumps(resp_js))
 
     # 返回JSON格式响应
     return resp
