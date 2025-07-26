@@ -2,6 +2,8 @@ import logging
 import time
 from datetime import datetime
 from flask import render_template, request, jsonify
+
+from biz.handler_user_msg import handler_user_msg
 from run import app
 from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter, update_counterbyid
 from wxcloudrun.model import Counters
@@ -99,15 +101,18 @@ def webchat():
     user_msg = json_data.get('content', '')
     from_user = json_data.get('fromUserName', '')
     to_user = json_data.get('toUserName', '')
+    resp_text, err_msg = handler_user_msg(user_msg)
+    if err_msg != '':
+        resp_text = '执行错误：' + err_msg
 
     # 调用Python计算逻辑
     result = json.dumps(json_data)
 
     # 返回JSON格式响应
     return jsonify({
-        "toUserName": from_user,  # 注意字段反向
-        "fromUserName": to_user,
-        "createTime": int(time.time()),
-        "msgType": "text",
-        "content": result
+        "ToUserName": from_user,  # 注意字段反向
+        "FromUserName": to_user,
+        "CreateTime": int(time.time()),
+        "MsgType": "text",
+        "Content": resp_text
     })
